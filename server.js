@@ -20,7 +20,7 @@ const Pet = require('./models/Pet');
 
 const PORT = process.env.PORT || 4000;  
 const updatePeriod = 1; // Update every 1 minutes
-const poopFrequency = 3; // Poop every 3 updates
+const poopFreq = 3; // Poop every 3 updates
 var poopFreqCount = 0;
 
 // Connect to MongoDB
@@ -61,12 +61,10 @@ app.listen(PORT, () => {
 
 
 cron.schedule(`*/${updatePeriod} * * * *`, async () => {
-    console.log('Updating pet states...');
-
+    console.log('Updating pet states..., poopFreqCount:', poopFreqCount);
     try {
         // Fetch all pets from the database
         const pets = await Pet.find();
-
         pets.forEach(async (pet) => {
             const currentTime = Date.now();
             const timeDiff = currentTime - new Date(pet.lastUpdated).getTime(); // Time difference in milliseconds
@@ -80,8 +78,11 @@ cron.schedule(`*/${updatePeriod} * * * *`, async () => {
             pet.happiness = Math.max(pet.happiness - happinessDecrease, 0);
             
             // Poop every 3 updates
-            if (poopFreqCount===3) pet.poopCount += 1;
-            poopFreqCount = (poopFreqCount + 1) % poopFrequency;
+            if (poopFreqCount===poopFreq-1) {
+                pet.poopCount += 1;
+                console.log('Poop count:', pet._id, pet.poopCount);
+            }
+            
 
 
             if (pet.poopCount >= 3) {  // Customize frequency as needed
@@ -108,8 +109,11 @@ cron.schedule(`*/${updatePeriod} * * * *`, async () => {
             await pet.save();
         });
 
+        // Update poop frequency count
+        poopFreqCount = (poopFreqCount + 1) % poopFreq;
+
         console.log('Pet states updated!');
-        console.log(pets);
+        // console.log(pets);
     } catch (error) {
         console.error('Error updating pet states:', error);
     }
