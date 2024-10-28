@@ -19,7 +19,9 @@ const Pet = require('./models/Pet');
 
 
 const PORT = process.env.PORT || 4000;  
-const updatePeriod = 5; // Update every 5 minutes
+const updatePeriod = 1; // Update every 1 minutes
+const poopFrequency = 3; // Poop every 3 updates
+var poopFreqCount = 0;
 
 // Connect to MongoDB
 mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true, dbName: 'PetDatabase' })
@@ -76,10 +78,28 @@ cron.schedule(`*/${updatePeriod} * * * *`, async () => {
 
             pet.hunger = Math.min(pet.hunger + hungerIncrease, 100);
             pet.happiness = Math.max(pet.happiness - happinessDecrease, 0);
+            
+            // Poop every 3 updates
+            if (poopFreqCount===3) pet.poopCount += 1;
+            poopFreqCount = (poopFreqCount + 1) % poopFrequency;
 
-            // If hunger is too high, decrease health
-            if (pet.hunger >= 80) {
+
+            if (pet.poopCount >= 3) {  // Customize frequency as needed
                 pet.health = Math.max(pet.health - 1, 0);
+            }
+
+            // If hunger is too high or happiness too low, decrease health
+            if (pet.hunger >= 90 || pet.happiness <= 10) {
+                pet.health = Math.max(pet.health - 1, 0);
+            }
+            else if (pet.hunger <= 10 && pet.happiness >= 90) {
+                pet.health = Math.min(pet.health + 1, 100);
+            }
+            if (pet.health === 0) {
+                pet.isAlive = false; // Pet dies when health reaches 0
+            }
+            else {
+                pet.isAlive = true;
             }
 
             pet.lastUpdated = currentTime; // Update the last updated timestamp
