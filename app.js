@@ -36,8 +36,17 @@ db.once('open', function callback () {
 
 // Simple route
 app.get('/', async (req, res) => {
-    res.send('Pet App Backend');
-    console.log('Pet App Backend');
+    if (db.readyState === 1) {
+        console.log('Connected to the database');
+        res.send('Pet App Backend');
+    }
+    else {
+        console.log('Not connected to the database');
+        res.send('Not connected to the database');
+    }
+    // const connection = mongoose.connection.readyState;
+    //res send if connected to the database
+    // console.log('Pet App Backend');
     // const products = await adminLogin.find();
     // console.log(products);
 });
