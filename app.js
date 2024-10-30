@@ -22,34 +22,52 @@ const PORT = process.env.PORT || 4000;
 const updatePeriod = 1; // Update every 1 minutes
 const poopFreq = 3; // Poop every 3 updates
 var poopFreqCount = 0;
+// var response =  res.status(200).send('Waiting on db connection');
+// Connect to MongoDB function
+// async function connectToDB() {
+//     try {
+//         await mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true, dbName: 'PetDatabase' })
+//         console.log('MongoDB connected');
+//         const db = mongoose.connection;
+//         db.on('error', console.error.bind(console, 'connection error:'));
+//         db.once('open', function callback () {
+//             console.log('Conntected To Mongo Database');
+//             response = res.status(200).send('Pet App Backend');
+//         });
+//     } catch (err) {
+//         console.error('Error connecting to the database:', err);
+//         response = res.status(500).send({ message: 'Error connecting to the database', error: err.message });
+//     };
+// }
+const connectToDatabase = async () => {
+    try {
+        await mongoose.connect(connectionString, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            dbName: 'PetDatabase'
+        });
+        console.log('MongoDB connected');
+        return { status: 200, message: 'Pet App Backend' };
+    } catch (err) {
+        console.error('Error connecting to the database:', err);
+        return { status: 500, message: 'Error connecting to the database', error: err.message };
+    }
+};
 
-// Connect to MongoDB
-mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true, dbName: 'PetDatabase' })
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.log(err));
-
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function callback () {
-    console.log('Conntected To Mongo Database');
-});
+// connectToDB();
 
 // Simple route
+// app.get('/', async (req, res) => {
+//     if (response) {
+//         res.send(response);
+//     }
+// });
 app.get('/', async (req, res) => {
-    if (db.readyState === 1) {
-        console.log('Connected to the database');
-        res.send('Pet App Backend');
-    }
-    else {
-        console.log('Not connected to the database');
-        res.send('Not connected to the database');
-    }
-    // const connection = mongoose.connection.readyState;
-    //res send if connected to the database
-    // console.log('Pet App Backend');
-    // const products = await adminLogin.find();
-    // console.log(products);
+    const response = await connectToDatabase();
+    res.status(response.status).send(response);
 });
+
+
 
 // Start the server
 app.listen(PORT, () => {
@@ -72,7 +90,7 @@ app.listen(PORT, () => {
 cron.schedule(`*/${updatePeriod} * * * *`, async () => {
     console.log('Updating pet states..., poopFreqCount:', poopFreqCount);
     try {
-        // Fetch all pets from the database
+        // Fetch all p  ets from the database
         const pets = await Pet.find();
         pets.forEach(async (pet) => {
             const currentTime = Date.now();
