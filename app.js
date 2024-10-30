@@ -55,6 +55,7 @@ const connectToDatabase = async () => {
 };
 
 // connectToDB();
+const response = connectToDatabase();
 
 // Simple route
 // app.get('/', async (req, res) => {
@@ -63,8 +64,8 @@ const connectToDatabase = async () => {
 //     }
 // });
 app.get('/', async (req, res) => {
-    const response = await connectToDatabase();
-    res.status(response.status).send(response);
+    // const response = await connectToDatabase();
+    res.status(200).send("Pet App Backend");
 });
 
 
