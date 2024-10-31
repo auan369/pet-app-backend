@@ -15,13 +15,13 @@ app.use(express.json());
 app.use(bodyParser.urlencoded())
 app.use('/api/pets', petRoutes);
 app.use('/api/users', userRoutes);
-const Pet = require('./models/Pet');
+// const Pet = require('./models/Pet');
 
 
 const PORT = process.env.PORT || 4000;  
-const updatePeriod = 1; // Update every 1 minutes
-const poopFreq = 3; // Poop every 3 updates
-var poopFreqCount = 0;
+// const updatePeriod = 3; // Update every 3 minutes
+// const poopFreq = 3; // Poop every 3 updates
+// var poopFreqCount = 0;
 // var response =  res.status(200).send('Waiting on db connection');
 // Connect to MongoDB function
 // async function connectToDB() {
@@ -87,62 +87,66 @@ app.listen(PORT, () => {
 //     console.log(pets);
 // }, 10000);
 
+// //Function to update pet states
+// const updatePetStates = async () => {
+//     console.log('Updating pet states...');
+//     try {
+//         // Fetch all pets from the database
+//         const pets = await Pet.find();
+//         pets.forEach(async (pet) => {
+//             const currentTime = Date.now();
+//             const timeDiff = currentTime - new Date(pet.lastUpdated).getTime(); // Time difference in milliseconds
+//             const minutesPassed = Math.floor(timeDiff / (60 * 1000));
+//             // only execute if time passed is more than 1 minute
+//             if (minutesPassed < updatePeriod) {
+//                 return;
+//             }
 
-cron.schedule(`*/${updatePeriod} * * * *`, async () => {
-    console.log('Updating pet states..., poopFreqCount:', poopFreqCount);
-    try {
-        // Fetch all p  ets from the database
-        const pets = await Pet.find();
-        pets.forEach(async (pet) => {
-            const currentTime = Date.now();
-            const timeDiff = currentTime - new Date(pet.lastUpdated).getTime(); // Time difference in milliseconds
-            const minutesPassed = Math.floor(timeDiff / (60 * 1000));
+//             // Increase hunger by 3 for every 3 minutes
+//             const hungerIncrease = Math.floor(minutesPassed / updatePeriod) * 3;
+//             const happinessDecrease = Math.floor(minutesPassed / updatePeriod) * 3;
 
-            // Increase hunger by 1 for every 5 minutes
-            const hungerIncrease = Math.floor(minutesPassed / updatePeriod);
-            const happinessDecrease = Math.floor(minutesPassed / updatePeriod);
-
-            pet.hunger = Math.min(pet.hunger + hungerIncrease, 100);
-            pet.happiness = Math.max(pet.happiness - happinessDecrease, 0);
+//             pet.hunger = Math.min(pet.hunger + hungerIncrease, 100);
+//             pet.happiness = Math.max(pet.happiness - happinessDecrease, 0);
             
-            // Poop every 3 updates
-            if (poopFreqCount===poopFreq-1) {
-                pet.poopCount += 1;
-                console.log('Poop count:', pet._id, pet.poopCount);
-            }
-            
+//             // Poop 1 every 3 minuted
+//             pet.poopCount += 1;
+//             console.log('Poop count:', pet._id, pet.poopCount);
 
+//             if (pet.poopCount >= 3) {  // Customize frequency as needed
+//                 pet.health = Math.max(pet.health - 1, 0);
+//             }
 
-            if (pet.poopCount >= 3) {  // Customize frequency as needed
-                pet.health = Math.max(pet.health - 1, 0);
-            }
+//             // If hunger is too high or happiness too low, decrease health
+//             if (pet.hunger >= 90 || pet.happiness <= 10) {
+//                 pet.health = Math.max(pet.health - 1, 0);
+//             }
+//             else if (pet.hunger <= 10 && pet.happiness >= 90) {
+//                 pet.health = Math.min(pet.health + 1, 100);
+//             }
+//             if (pet.health === 0) {
+//                 pet.isAlive = false; // Pet dies when health reaches 0
+//             }
+//             else {
+//                 pet.isAlive = true;
+//             }
 
-            // If hunger is too high or happiness too low, decrease health
-            if (pet.hunger >= 90 || pet.happiness <= 10) {
-                pet.health = Math.max(pet.health - 1, 0);
-            }
-            else if (pet.hunger <= 10 && pet.happiness >= 90) {
-                pet.health = Math.min(pet.health + 1, 100);
-            }
-            if (pet.health === 0) {
-                pet.isAlive = false; // Pet dies when health reaches 0
-            }
-            else {
-                pet.isAlive = true;
-            }
+//             pet.lastUpdated = currentTime; // Update the last updated timestamp
 
-            pet.lastUpdated = currentTime; // Update the last updated timestamp
+//             // Save the updated pet state
+//             await pet.save();
+//         });
 
-            // Save the updated pet state
-            await pet.save();
-        });
+//         // Update poop frequency count
+//         // poopFreqCount = (poopFreqCount + 1) % poopFreq;
 
-        // Update poop frequency count
-        poopFreqCount = (poopFreqCount + 1) % poopFreq;
+//         console.log('Pet states updated!');
+//         // console.log(pets);
+//     } catch (error) {
+//         console.error('Error updating pet states:', error);
+//     }
+// }
 
-        console.log('Pet states updated!');
-        // console.log(pets);
-    } catch (error) {
-        console.error('Error updating pet states:', error);
-    }
-});
+// cron.schedule(`*/${updatePeriod} * * * *`, async () => {
+//     updatePetStates();
+// });
