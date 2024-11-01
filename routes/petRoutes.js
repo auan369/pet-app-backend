@@ -2,7 +2,6 @@ const express = require('express');
 const Pet = require('../models/Pet');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
-// const mongoose = require('mongoose');
 const updatePeriod = 3; // Update every 3 minutes
 
 
@@ -25,7 +24,7 @@ const updatePetStates = async () => {
     try {
         // Fetch all pets from the database
         const pets = await Pet.find();
-        pets.forEach(async (pet) => {
+        for (const pet of pets) {
             const currentTime = Date.now();
             const timeDiff = currentTime - new Date(pet.lastUpdated).getTime(); // Time difference in milliseconds
             const minutesPassed = Math.floor(timeDiff / (60 * 1000));
@@ -68,7 +67,7 @@ const updatePetStates = async () => {
 
             // Save the updated pet state
             await pet.save();
-        });
+        };
 
         // Update poop frequency count
         // poopFreqCount = (poopFreqCount + 1) % poopFreq;
@@ -86,7 +85,7 @@ router.post('/', async (req, res) => {
     // const idObj = new mongoose.mongo.ObjectId(id);
     const newPet = new Pet({ petType:petType, userId: userId }); 
     await newPet.save();
-    res.status(201).json(newPet);
+    res.status(201).json({ status: 'success', data: newPet });;
 });
 
 // Get a pet by userId
@@ -101,7 +100,8 @@ router.get('/user/:userId', async (req, res) => {
 router.get('/:id', async (req, res) => {
     updatePetStates();
     const pet = await Pet.findById(req.params.id);
-    res.status(200).json(pet);
+    // res.status(200).json(pet);
+    res.status(200).json({ status: 'success', data: pet });
 }); 
 
 // Update pet stats
@@ -109,7 +109,8 @@ router.put('/:id', authenticateToken, async (req, res) => {
     console.log(req.body);
     updatePetStates();
     const updatedPet = await Pet.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).json(updatedPet);
+    // res.status(200).json(updatedPet);
+    res.status(200).json({ status: 'success', data: updatedPet });
 });
 
 module.exports = router;
