@@ -9,6 +9,7 @@ This is the backend for the **Pet App**, where users can manage their virtual pe
 - [Setup](#setup)
 - [Environment Variables](#environment-variables)
 - [API Endpoints](#api-endpoints)
+- [Demo](#demo)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -127,9 +128,16 @@ JWT_SECRET=your-secret-key
 
     ```bash
     {
-    "name": "Fluffy",
-    "hunger": 30,
-    "health": 80
+    _id: new ObjectId('67175fc315e43ed03e86c265'),
+    petType: 'pico',
+    hunger: 82,
+    happiness: 8,
+    health: 87,
+    userId: new ObjectId('671702e4d9ad662423135e81'),
+    lastUpdated: 2024-11-07T03:04:23.969Z,
+    isAlive: true,
+    poopCount: 1,
+    __v: 0
     }
     ```
 
@@ -140,9 +148,16 @@ JWT_SECRET=your-secret-key
 
     ```bash
     {
-    "name": "Fluffy",
-    "hunger": 30,
-    "health": 80
+    _id: new ObjectId('67175fc315e43ed03e86c265'),
+    petType: 'pico',
+    hunger: 82,
+    happiness: 8,
+    health: 87,
+    userId: new ObjectId('671702e4d9ad662423135e81'),
+    lastUpdated: 2024-11-07T03:04:23.969Z,
+    isAlive: true,
+    poopCount: 1,
+    __v: 0
     }
     ```
 
@@ -156,11 +171,24 @@ JWT_SECRET=your-secret-key
 
     ```bash
     {
-    "name": "Fluffy",
-    "hunger": 30,
-    "health": 80
+    _id: new ObjectId('67175fc315e43ed03e86c265'),
+    petType: 'pico',
+    hunger: 82,
+    happiness: 8,
+    health: 87,
+    userId: new ObjectId('671702e4d9ad662423135e81'),
+    lastUpdated: 2024-11-07T03:04:23.969Z,
+    isAlive: true,
+    poopCount: 1,
+    __v: 0
     }
     ```
+
+## Demo
+
+A live demo of the app is available here:
+
+[Backend (API)](https://pet-app-backend-gamma.vercel.app/)
 
 ## Contributing
 
